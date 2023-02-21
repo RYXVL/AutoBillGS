@@ -119,8 +119,9 @@ class AutoBillGS:
        templst.append(int(self.item_qty.get()))
        templst.append(int(self.item_price.get()) * int(self.item_qty.get()))
        self.lst.append(templst)
-       # self.item_name.em
-
+       self.item_name.delete(0, END)
+       self.item_price.delete(0, END)
+       self.item_qty.delete(0, END)
 
    def browse(self):
       self.file_name = filedialog.askopenfilename(title="Select a File")
