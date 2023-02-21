@@ -2,6 +2,7 @@ import  os
 from tkinter import *
 from reportlab.pdfgen import canvas
 from tkinter import filedialog
+import random
 
 # main class
 class AutoBillGS:
@@ -33,10 +34,10 @@ class AutoBillGS:
        self.city = Entry(self.frame, font=("times new roman", 15), bg="light grey")
        self.city.place(x=270, y=200, width=300, height=35)
 
-       Label(self.frame, text="GST Number", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(
+       Label(self.frame, text="Company Number", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(
            x=50, y=260)
-       self.gst = Entry(self.frame, font=("times new roman", 15), bg="light grey")
-       self.gst.place(x=270, y=260, width=300, height=35)
+       self.compno = Entry(self.frame, font=("times new roman", 15), bg="light grey")
+       self.compno.place(x=270, y=260, width=300, height=35)
 
        Label(self.frame, text="Date", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(
            x=50, y=320)
@@ -76,32 +77,39 @@ class AutoBillGS:
 
    def generate_invoice(self):
         c = canvas.Canvas("Bill.pdf", pagesize=(200, 250), bottomup=0)
-        c.setFillColorRGB(0.8, 0.5, 0.7)
-        c.line(70, 22, 180, 22)
-        c.line(5, 45, 195, 45)
-        c.line(15, 120, 185, 120)
-        c.line(35, 108, 35, 220)
-        c.line(115, 108, 115, 220)
-        c.line(135, 108, 135, 220)
-        c.line(160, 108, 160, 220)
-        c.line(15, 220, 185, 220)
+        c.setFillColorRGB(0, 0, 0) # set color of text of the entire pdf
+        # all lines drawn are considered from top to bottom & from right to left
+        c.line(5, 45, 195, 45) # line horizontal 1
+        c.line(15, 120, 185, 120) # line horizontal 3
+        c.line(35, 108, 35, 220) # line vertical 2
+        c.line(115, 108, 115, 220) # line vertical 3
+        c.line(135, 108, 135, 220) # line vertical 4
+        c.line(160, 108, 160, 220) # line vertical 5
+        c.line(15, 220, 185, 220) # line horizontal 4
         c.translate(10, 40)
         c.scale(1, -1)
+        # drawing the image below
         c.drawImage(self.file_name, 0, 0, width=50, height=30)
         c.scale(1, -1)
         c.translate(-10, -40)
+        # drawing the entered company name at a position
         c.setFont("Times-Bold", 10)
-        c.drawCentredString(125, 20, self.company_name.get())
+        c.drawRightString(180, 20, self.company_name.get())
+        # drawing the entered company address at a position
         c.setFont("Times-Bold", 5)
-        c.drawCentredString(125, 30, self.address.get())
-        c.drawCentredString(125, 35, self.city.get() + ", India")
+        c.drawRightString(180, 25, self.address.get())
+        # drawing the entered company city at a position
+        c.drawRightString(180, 30, self.city.get() + ", India")
+        # drawing the entered company phone number at a position
         c.setFont("Times-Bold", 6)
-        c.drawCentredString(125, 42, "GST No:" + self.gst.get())
+        c.drawRightString(180, 35, "Ph: " + self.compno.get())
+
         c.setFont("Times-Bold", 8)
         c.drawCentredString(100, 55, "INVOICE")
+
         c.setFont("Times-Bold", 5)
         c.drawRightString(70, 70, "Invoice No. :")
-        c.drawRightString(100, 70, "XXXXXXX")
+        c.drawRightString(100, 70, f"{random.randint(1000000, 9999999)}")
         c.drawRightString(70, 80, "Date :")
         c.drawRightString(100, 80, self.date.get())
         c.drawRightString(70, 90, "Customer Name :")
@@ -110,7 +118,7 @@ class AutoBillGS:
         c.drawRightString(100, 100, self.contact.get())
         c.roundRect(15, 108, 170, 130, 10, stroke=1, fill=0)
         c.drawCentredString(25, 118, "S.No.")
-        c.drawCentredString(75, 118, "Orders")
+        c.drawCentredString(75, 118, "Item")
         c.drawCentredString(125, 118, "Price")
         c.drawCentredString(148, 118, "Qty.")
         c.drawCentredString(173, 118, "Total")
@@ -119,15 +127,15 @@ class AutoBillGS:
         c.drawRightString(180, 235, "Signature")
         c.showPage()
         c.save()
-        os.startfile("Invoice by DataFlair.pdf")
+        os.startfile("Bill.pdf")
 
 def main():
-   # ==== create tkinter window
+   # create tkinter window
    root = Tk()
-   # === creating object for class AutoBillGS
+   # creating object for class AutoBillGS
    obj = AutoBillGS(root)
-   # ==== start the gui
+   # start the GUI
    root.mainloop()
 if __name__ == "__main__":
-   # ==== calling main function
+   # calling main function
    main()
