@@ -36,11 +36,11 @@ class AutoBillGS:
        self.company_name.place(x=270, y=80, width=300, height=35)
 
        # creating the address label and the corresponding entry to get data from user
-       Label(self.frame, text="Address", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(x=50, y=140)
+       Label(self.frame, text="Company Address", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(x=50, y=140)
        self.address= Entry(self.frame, font=("times new roman", 15), bg="light grey")
        self.address.place(x=270, y=140, width=300,height=35)
 
-       Label(self.frame, text="City", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(x=50, y=200)
+       Label(self.frame, text="Company City", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(x=50, y=200)
        self.city = Entry(self.frame, font=("times new roman", 15), bg="light grey")
        self.city.place(x=270, y=200, width=300, height=35)
 
@@ -49,12 +49,12 @@ class AutoBillGS:
        self.compno = Entry(self.frame, font=("times new roman", 15), bg="light grey")
        self.compno.place(x=270, y=260, width=300, height=35)
 
-       Label(self.frame, text="Date", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(
+       Label(self.frame, text="Date of Transaction\n(DD/MM/YYYY)", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(
            x=50, y=320)
        self.date = Entry(self.frame, font=("times new roman", 15), bg="light grey")
        self.date.place(x=270, y=320, width=300, height=35)
 
-       Label(self.frame, text="Contact", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(
+       Label(self.frame, text="Customer Contact", font=("times new roman", 15, "bold"), bg="#121212", fg="white").place(
            x=50, y=380)
        self.contact = Entry(self.frame, font=("times new roman", 15), bg="light grey")
        self.contact.place(x=270, y=380, width=300, height=35)
@@ -125,6 +125,7 @@ class AutoBillGS:
 
    def browse(self):
       self.file_name = filedialog.askopenfilename(title="Select a File")
+      # print(type(self.file_name))
       Label(self.frame, text=os.path.basename(self.file_name), font=("times new roman", 15)).place(x=270, y=600)
 
 
@@ -150,7 +151,8 @@ class AutoBillGS:
         c.translate(10, 40)
         c.scale(1, -1)
         # drawing the image below
-        c.drawImage(self.file_name, 0, 0, width=50, height=30)
+        c.drawImage('wavy-wrinkle-pattern.jpg', 0, 0, width=50, height=30)
+        # c.drawImage(self.file_name, 0, 0, width=50, height=30)
         c.scale(1, -1)
         c.translate(-10, -40)
         # drawing the entered company name at a position
