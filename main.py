@@ -4,6 +4,21 @@ from reportlab.pdfgen import canvas
 from tkinter import filedialog
 import random
 
+import mysql.connector
+
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    passwd="root",
+    database="abgs"
+    )
+
+mycursor = db.cursor()
+
+# mycursor.execute('select * from company natural join customer natural join purchase;')
+
+# for x in mycursor:
+#     print(x)
 
 # main class
 class AutoBillGS:
@@ -114,10 +129,14 @@ class AutoBillGS:
        templst.append(self.serial)
        self.serial = self.serial + 1
        templst.append(self.item_name.get())
+       # print(type(self.item_price.get()))
 
        templst.append(int(self.item_price.get()))
        templst.append(int(self.item_qty.get()))
        templst.append(int(self.item_price.get()) * int(self.item_qty.get()))
+
+       # mycursor.execute('insert into purchase vale')
+
        self.lst.append(templst)
        self.item_name.delete(0, END)
        self.item_price.delete(0, END)
@@ -125,14 +144,22 @@ class AutoBillGS:
 
    def browse(self):
       self.file_name = filedialog.askopenfilename(title="Select a File")
-      # print(type(self.file_name))
+      # print('xyz'+self.file_name)
       Label(self.frame, text=os.path.basename(self.file_name), font=("times new roman", 15)).place(x=270, y=600)
 
 
    def generate_invoice(self):
+        generated_invoice_no = random.randint(1000000, 9999999)
+
+        mycursor.execute(f'insert into company values({generated_invoice_no}, "{self.company_name.get()}", "{self.address.get()}", "{self.city.get()}", {self.compno.get()}, "{self.file_name}");')
+        db.commit()
+        mycursor.execute(f'insert into customer values({generated_invoice_no}, "{self.c_name.get()}", {self.contact.get()}, "{self.date.get()}");')
+        db.commit()
+
+
         HEIGHT = 130
         WIDTH = [25, 75, 125, 148, 173]
-        c = canvas.Canvas("Bill.pdf", pagesize=(200, 250), bottomup=0)
+        c = canvas.Canvas(f'{generated_invoice_no}_{self.c_name.get()}.pdf', pagesize=(200, 250), bottomup=0)
         c.setFillColorRGB(0, 0, 0) # set color of text of the entire pdf
         # all lines drawn are considered from top to bottom & from right to left
         c.line(5, 45, 195, 45) # line horizontal 1
@@ -141,6 +168,8 @@ class AutoBillGS:
         for i in range(len(self.lst)):
             for j in range(len(self.lst[0])):
                 c.drawCentredString(WIDTH[j], HEIGHT, str(self.lst[i][j]))
+            mycursor.execute(f'insert into purchase values({generated_invoice_no}, "{self.lst[i][1]}", {self.lst[i][2]}, {self.lst[i][3]});')
+            db.commit()
                 # WIDTH = WIDTH + 20
             HEIGHT = HEIGHT + 10
         c.line(35, 108, 35, 220) # line vertical 2
@@ -151,7 +180,7 @@ class AutoBillGS:
         c.translate(10, 40)
         c.scale(1, -1)
         # drawing the image below
-        c.drawImage('wavy-wrinkle-pattern.jpg', 0, 0, width=50, height=30)
+        c.drawImage(f'{self.file_name}', 0, 0, width=50, height=30)
         # c.drawImage(self.file_name, 0, 0, width=50, height=30)
         c.scale(1, -1)
         c.translate(-10, -40)
@@ -162,7 +191,8 @@ class AutoBillGS:
         c.setFont("Times-Bold", 5)
         c.drawRightString(180, 25, self.address.get())
         # drawing the entered company city at a position
-        c.drawRightString(180, 30, self.city.get() + ", India")
+        # c.drawRightString(180, 30, self.city.get() + ", India")
+        c.drawRightString(180, 30, self.city.get())
         # drawing the entered company phone number at a position
         c.setFont("Times-Bold", 6)
         c.drawRightString(180, 35, "Ph: " + self.compno.get())
@@ -172,7 +202,7 @@ class AutoBillGS:
 
         c.setFont("Times-Bold", 5)
         c.drawRightString(70, 70, "Invoice No. :")
-        c.drawRightString(100, 70, f"{random.randint(1000000, 9999999)}")
+        c.drawRightString(100, 70, f"{generated_invoice_no}")
         c.drawRightString(70, 80, "Date :")
         c.drawRightString(100, 80, self.date.get())
         c.drawRightString(70, 90, "Customer Name :")
@@ -190,7 +220,8 @@ class AutoBillGS:
         # c.drawRightString(180, 235, "Signature"
         c.showPage()
         c.save()
-        os.startfile("Bill.pdf")
+        # os.startfile("Bill.pdf")
+        os.startfile(f'{generated_invoice_no}_{self.c_name.get()}.pdf')
 
 def main():
    # create tkinter window
